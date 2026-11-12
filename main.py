@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 """make.fun 'coolest art' entry: copies the bundled entry.png to the output dir.
+
+The artwork is a giant celestial koi -- vermillion, white and gold -- swimming
+through swirling clouds above a lantern-lit village under a crescent moon,
+with a soft golden sparkle trail streaming from its tail fin.
 Pure standard library. The art itself is generated procedurally by generate.py.
 """
 import os

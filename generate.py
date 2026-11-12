@@ -57,6 +57,17 @@ for _ in range(1300):
     if r>=3 and random.random()<0.4:
         L=r*5; sd.line([sx-L,sy,sx+L,sy],fill=(255,235,200,a//3),width=S); sd.line([sx,sy-L,sx,sy+L],fill=(255,235,200,a//3),width=S)
 img=Image.alpha_composite(img,stars)
+# faint extra stars in the darkest sky corner (top-left, new)
+# that corner reads emptiest in the render, so seed a sparse, dimmer
+# scatter there only -- smaller and fainter than the main star field.
+corner=Image.new("RGBA",(SW,SH),(0,0,0,0)); cod=ImageDraw.Draw(corner); rng_corner=random.Random(31)
+for _ in range(150):
+    cxp=rng_corner.uniform(0,330*S); cyp=rng_corner.uniform(0,230*S)
+    # fade the scatter out towards the corner's inner edges
+    fade=max(0.0,1.0-max(cxp/(330*S),cyp/(230*S))*0.55)
+    rr=rng_corner.choice([1,1,1,2])*S//2; aa=int(rng_corner.randint(28,120)*fade)
+    cod.ellipse([cxp-rr,cyp-rr,cxp+rr,cyp+rr],fill=(205,228,255,aa))
+img=Image.alpha_composite(img,corner.filter(ImageFilter.GaussianBlur(0.6*S)))
 
 # aurora faint top (magenta/teal) for atmosphere
 def ribbon(base_y,amp,col,alpha,thick,phase,blur):
@@ -161,6 +172,24 @@ for i in range(280):
     t=random.random(); px=(905+t*105+random.gauss(0,13))*S; py=(440-t*180+20*math.sin(t*7)+random.gauss(0,17*(0.4+t)))*S
     r=max(1.0,random.choice([1,2,2,3,4])*(1-t*0.5)); td.ellipse([px-r,py-r,px+r,py+r],fill=(255,205,110,int(205*(1-t)+30)))
 img=Image.alpha_composite(img,tr.filter(ImageFilter.GaussianBlur(1.0*S)))
+# soft golden sparkle trail streaming from the koi's tail fin (new, subtle + elegant)
+# a fine second stream of tiny glowing motes dispersing behind the tail fin,
+# drifting down-left along the tail's curl and fading as they spread out.
+# separate seeded RNG so the rest of the scene's random sequence is untouched.
+trail2=Image.new("RGBA",(SW,SH),(0,0,0,0)); t2d=ImageDraw.Draw(trail2); rng_trail=random.Random(77)
+for i in range(190):
+    tt=rng_trail.random()
+    # start tight at the tail fin (~905,415) and disperse backwards / down-left
+    px=(905-tt*150+rng_trail.gauss(0,6+22*tt))*S
+    py=(415+tt*95+18*math.sin(tt*5.2)+rng_trail.gauss(0,5+20*tt))*S
+    rr=max(0.8,rng_trail.choice([1,1,2,2,3])*(1.15-tt*0.65))
+    alpha=int(170*(1-tt)+18)
+    t2d.ellipse([px-rr,py-rr,px+rr,py+rr],fill=(255,214,130,alpha))
+    if rng_trail.random()<0.10:  # occasional tiny four-point glint among the motes
+        gl=rr*3.2
+        t2d.line([px-gl,py,px+gl,py],fill=(255,232,175,alpha//2),width=S)
+        t2d.line([px,py-gl,px,py+gl],fill=(255,232,175,alpha//2),width=S)
+img=Image.alpha_composite(img,trail2.filter(ImageFilter.GaussianBlur(0.9*S)))
 
 # ---- clouds IN FRONT (bottom of koi, dreamy, soft) ----
 img=Image.alpha_composite(img,cloud_layer(575,690,24,[(70,60,130),(88,72,150)],120,10,31))
