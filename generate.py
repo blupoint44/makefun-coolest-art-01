@@ -141,11 +141,15 @@ fd.polygon(fin,fill=(255,150,80,105))
 for k in range(5):
     fd.line([(312*S+k*9*S,522*S),(330*S+k*7*S,640*S)],fill=(255,215,160,140),width=2*S)
 img=Image.alpha_composite(img,finlay.filter(ImageFilter.GaussianBlur(1.5*S)))
-# whiskers + eye
+# whiskers + eye — barbels strengthened: longer, thicker, softly glowing cream
 wl=Image.new("RGBA",(SW,SH),(0,0,0,0)); wld=ImageDraw.Draw(wl)
-wld.line([(105*S,585*S),(58*S,612*S),(30*S,600*S)],fill=(255,240,220,220),width=3*S)
-wld.line([(112*S,560*S),(66*S,540*S),(38*S,548*S)],fill=(255,240,220,200),width=3*S)
-img=Image.alpha_composite(img,wl.filter(ImageFilter.GaussianBlur(0.8*S)))
+wld.line([(105*S,585*S),(52*S,618*S),(14*S,606*S)],fill=(255,225,170,90),width=11*S,joint="curve")
+wld.line([(112*S,560*S),(58*S,534*S),(20*S,544*S)],fill=(255,225,170,90),width=11*S,joint="curve")
+img=Image.alpha_composite(img,wl.filter(ImageFilter.GaussianBlur(3.0*S)))
+wl=Image.new("RGBA",(SW,SH),(0,0,0,0)); wld=ImageDraw.Draw(wl)
+wld.line([(105*S,585*S),(70*S,606*S),(44*S,614*S),(14*S,606*S)],fill=(255,244,214,255),width=5*S,joint="curve")
+wld.line([(112*S,560*S),(76*S,544*S),(50*S,536*S),(20*S,544*S)],fill=(255,244,214,245),width=5*S,joint="curve")
+img=Image.alpha_composite(img,wl.filter(ImageFilter.GaussianBlur(0.7*S)))
 eye=Image.new("RGBA",(SW,SH),(0,0,0,0)); ed=ImageDraw.Draw(eye); ex,ey=182*S,536*S
 for r,a,col in [(30,60,(255,200,90)),(17,255,(255,224,150)),(10,255,(24,14,8)),(4,255,(255,255,255))]:
     ox=r//3 if col==(255,255,255) else 0; oy=-r//3 if col==(255,255,255) else 0
